@@ -19,11 +19,11 @@ export const Swinesweeper = () => {
 		for (let i = 0; i < currentBoard.length; i++) {
 			for (let j = 0; j < currentBoard[i].length; j++) {
 				if (currentBoard[i][j].value !== '🐷' && !currentBoard[i][j].clicked) {
-					return false;
+					return false; // Found a non-pig tile that hasn't been clicked.
 				}
 			}
 		}
-		return true;
+		return true; // All non-pig tiles have been clicked.
 	};
 
 	const generateBoard = () => {
@@ -80,17 +80,6 @@ export const Swinesweeper = () => {
 			setBoard((prevBoard) => {
 				const newBoard = JSON.parse(JSON.stringify(prevBoard));
 				newBoard[x][y].clicked = true;
-				if (checkForWin(newBoard)) {
-					setTimeout(() => {
-						alert('Congratulations! You won!');
-						setBoard((prevBoard) =>
-							prevBoard.map((row) =>
-								row.map((cell) => ({ ...cell, clicked: true }))
-							)
-						);
-					}, 100);
-				}
-
 				return newBoard;
 			});
 
@@ -134,6 +123,17 @@ export const Swinesweeper = () => {
 
 			revealSurrounding(x, y);
 
+			if (checkForWin(newBoard)) {
+				setTimeout(() => {
+					alert('Congratulations! You won!');
+					setBoard((prevBoard) =>
+						prevBoard.map((row) =>
+							row.map((cell) => ({ ...cell, clicked: true }))
+						)
+					);
+				}, 100);
+			}
+
 			return newBoard;
 		});
 	};
@@ -152,6 +152,7 @@ export const Swinesweeper = () => {
 				style={{
 					...newGameButtonStyles,
 					backgroundColor: 'green',
+					color: 'white',
 				}}
 			>
 				New Game
