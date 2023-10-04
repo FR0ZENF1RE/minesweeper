@@ -1,7 +1,30 @@
 import React, { useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 
 export const Swinesweeper = () => {
 	const [board, setBoard] = useState([]);
+
+	const newGameButtonStyles = useSpring({
+		from: { transform: 'scale(1)' },
+		to: { transform: 'scale(1.05)' },
+		reverse: true,
+		loop: {
+			reverse: true,
+			from: { transform: 'scale(1)' },
+			to: { transform: 'scale(1.05)' },
+		},
+	});
+
+	const checkForWin = (currentBoard) => {
+		for (let i = 0; i < currentBoard.length; i++) {
+			for (let j = 0; j < currentBoard[i].length; j++) {
+				if (currentBoard[i][j].value !== '🐷' && !currentBoard[i][j].clicked) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
 
 	const generateBoard = () => {
 		let board = [];
@@ -57,6 +80,17 @@ export const Swinesweeper = () => {
 			setBoard((prevBoard) => {
 				const newBoard = JSON.parse(JSON.stringify(prevBoard));
 				newBoard[x][y].clicked = true;
+				if (checkForWin(newBoard)) {
+					setTimeout(() => {
+						alert('Congratulations! You won!');
+						setBoard((prevBoard) =>
+							prevBoard.map((row) =>
+								row.map((cell) => ({ ...cell, clicked: true }))
+							)
+						);
+					}, 100);
+				}
+
 				return newBoard;
 			});
 
@@ -73,7 +107,33 @@ export const Swinesweeper = () => {
 
 		setBoard((prevBoard) => {
 			const newBoard = JSON.parse(JSON.stringify(prevBoard));
-			newBoard[x][y].clicked = true;
+			const revealSurrounding = (x, y) => {
+				if (x < 0 || y < 0 || x >= 10 || y >= 10 || newBoard[x][y].clicked) {
+					return;
+				}
+
+				newBoard[x][y].clicked = true;
+
+				if (newBoard[x][y].value === 0) {
+					const directions = [
+						[0, 1],
+						[1, 0],
+						[0, -1],
+						[-1, 0],
+						[-1, -1],
+						[-1, 1],
+						[1, -1],
+						[1, 1],
+					];
+
+					for (let [dx, dy] of directions) {
+						revealSurrounding(x + dx, y + dy);
+					}
+				}
+			};
+
+			revealSurrounding(x, y);
+
 			return newBoard;
 		});
 	};
@@ -87,14 +147,15 @@ export const Swinesweeper = () => {
 				border: '3px solid sandybrown',
 			}}
 		>
-			<button
+			<animated.button
 				onClick={generateBoard}
 				style={{
+					...newGameButtonStyles,
 					backgroundColor: 'green',
 				}}
 			>
 				New Game
-			</button>
+			</animated.button>
 			<div>
 				{board.map((row, i) => (
 					<div key={i} style={{ display: 'flex' }}>
