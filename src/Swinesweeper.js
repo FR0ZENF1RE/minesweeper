@@ -144,7 +144,6 @@ export const Swinesweeper = () => {
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
-				border: '3px solid sandybrown',
 			}}
 		>
 			<animated.button
@@ -157,6 +156,7 @@ export const Swinesweeper = () => {
 			>
 				New Game
 			</animated.button>
+			<br />
 			<div>
 				{board.map((row, i) => (
 					<div key={i} style={{ display: 'flex' }}>
