@@ -185,7 +185,12 @@ export const Swinesweeper = () => {
 										: cell.flagged
 										? 'yellow'
 										: 'dodgerblue',
+									WebkitUserSelect: 'none', // for iOS Safari
+									WebkitTouchCallout: 'none',
+									MsUserSelect: 'none',
+									MozUserSelect: 'none',
 									userSelect: 'none',
+									WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
 								}}
 								onClick={() => handleClick(i, j)}
 								onTouchStart={(e) => {
@@ -197,6 +202,10 @@ export const Swinesweeper = () => {
 								}}
 								onTouchEnd={() => clearTimeout(this.pressTimer)}
 								onTouchMove={() => clearTimeout(this.pressTimer)}
+								onContextMenu={(e) => {
+									e.preventDefault();
+									handleLongPress(i, j);
+								}}
 							>
 								{cell.clicked ? cell.value : cell.flagged ? '🥓' : ''}
 							</button>
