@@ -31,7 +31,7 @@ export const Swinesweeper = () => {
 		for (let i = 0; i < 10; i++) {
 			let row = [];
 			for (let j = 0; j < 10; j++) {
-				row.push({ value: 0, clicked: false });
+				row.push({ value: 0, clicked: false, flagged: false });
 			}
 			board.push(row);
 			console.log('board: ', board);
@@ -73,6 +73,16 @@ export const Swinesweeper = () => {
 		}
 
 		setBoard(board);
+	};
+
+	const handleLongPress = (x, y) => {
+		setBoard((prevBoard) => {
+			const newBoard = JSON.parse(JSON.stringify(prevBoard));
+			if (!newBoard[x][y].clicked) {
+				newBoard[x][y].flagged = !newBoard[x][y].flagged;
+			}
+			return newBoard;
+		});
 	};
 
 	const handleClick = (x, y) => {
@@ -170,11 +180,25 @@ export const Swinesweeper = () => {
 									justifyContent: 'center',
 									alignItems: 'center',
 									fontSize: '18px',
-									backgroundColor: cell.clicked ? 'skyblue' : 'dodgerblue',
+									backgroundColor: cell.clicked
+										? 'skyblue'
+										: cell.flagged
+										? 'yellow'
+										: 'dodgerblue',
+									userSelect: 'none',
 								}}
 								onClick={() => handleClick(i, j)}
+								onTouchStart={(e) => {
+									e.preventDefault();
+									this.pressTimer = setTimeout(
+										() => handleLongPress(i, j),
+										1000
+									);
+								}}
+								onTouchEnd={() => clearTimeout(this.pressTimer)}
+								onTouchMove={() => clearTimeout(this.pressTimer)}
 							>
-								{cell.clicked ? cell.value : ''}
+								{cell.clicked ? cell.value : cell.flagged ? '🥓' : ''}
 							</button>
 						))}
 					</div>
