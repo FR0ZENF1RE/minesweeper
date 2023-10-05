@@ -3,6 +3,7 @@ import { useSpring, animated } from 'react-spring';
 
 export const Swinesweeper = () => {
 	const [board, setBoard] = useState([]);
+	const [longPressDetected, setLongPressDetected] = useState(false);
 
 	const newGameButtonStyles = useSpring({
 		from: { transform: 'scale(1)' },
@@ -86,6 +87,10 @@ export const Swinesweeper = () => {
 	};
 
 	const handleClick = (x, y) => {
+		if (longPressDetected) {
+			setLongPressDetected(false);
+			return;
+		}
 		if (board[x][y].value === '🐷') {
 			setBoard((prevBoard) => {
 				const newBoard = JSON.parse(JSON.stringify(prevBoard));
@@ -195,10 +200,11 @@ export const Swinesweeper = () => {
 								onClick={() => handleClick(i, j)}
 								onTouchStart={(e) => {
 									e.preventDefault();
-									this.pressTimer = setTimeout(
-										() => handleLongPress(i, j),
-										1000
-									);
+									setLongPressDetected(false);
+									this.pressTimer = setTimeout(() => {
+										handleLongPress(i, j);
+										setLongPressDetected(true);
+									}, 1000);
 								}}
 								onTouchEnd={() => clearTimeout(this.pressTimer)}
 								onTouchMove={() => clearTimeout(this.pressTimer)}
